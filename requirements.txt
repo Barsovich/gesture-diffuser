@@ -1,6 +1,10 @@
-pymo
+transforms3d
 numpy
 torch
 tqdm
 matplotlib
-sklearn
+scikit-learn
+joblib
+pandas
+scipy
+ipykernel
