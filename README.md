@@ -1,1 +1,1 @@
-# gesture-diffuser
+# GestureDiffuser
