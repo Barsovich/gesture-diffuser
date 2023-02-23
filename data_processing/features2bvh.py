@@ -18,29 +18,37 @@ if module_path not in sys.path:
     sys.path.append(module_path)
 
 
-def feat2bvh(feat_file, bvh_file):
+def feat2bvh(feat_file, bvh_folder):
 
     features = np.load(feat_file, allow_pickle=True)  # ['clips']
-    print("Original features shape: ", features.shape)
 
-    # shorten sequence length for visualization
-    features = features[:3000]
-    print("Shortened features shape: ", features.shape)
+    features = features.item()['motion'].squeeze()
 
-    # transform the data back to it's original shape
-    # note: in a real scenario this is usually done with predicted data
-    # note: some transformations (such as transforming to joint positions) are not inversible
-    bvh_data = pipeline.inverse_transform([features])
+    for i in range(len(features)):
+        feat = features[i].T
 
-    # ensure correct body orientation
-    bvh_data[0].values["body_world_Xrotation"] = 0
-    bvh_data[0].values["body_world_Yrotation"] = 0
-    bvh_data[0].values["body_world_Zrotation"] = 0
+        # import pdb
+        # pdb.set_trace()
+        print("Original features shape: ", feat.shape)
 
-    # Test to write some of it to file for visualization in blender or motion builder
-    writer = BVHWriter()
-    with open(bvh_file, 'w') as f:
-        writer.write(bvh_data[0], f)
+        # shorten sequence length for visualization
+        # features = features[:3000]
+        # print("Shortened features shape: ", features.shape)
+
+        # transform the data back to it's original shape
+        # note: in a real scenario this is usually done with predicted data
+        # note: some transformations (such as transforming to joint positions) are not inversible
+        bvh_data = pipeline.inverse_transform([feat])
+
+        # ensure correct body orientation
+        bvh_data[0].values["body_world_Xrotation"] = 0
+        bvh_data[0].values["body_world_Yrotation"] = 0
+        bvh_data[0].values["body_world_Zrotation"] = 0
+
+        # Test to write some of it to file for visualization in blender or motion builder
+        writer = BVHWriter()
+        with open(os.path.join(bvh_folder, f"result_{i}.bvh"), 'w') as f:
+            writer.write(bvh_data[0], f)
 
 
 if __name__ == '__main__':
